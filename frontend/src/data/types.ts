@@ -17,6 +17,8 @@ export type ModuleMeta = {
   statuses: string[]
   actions: string[]
   actionTargets: Record<string, string>
+  // 每个动作允许的起始状态：声明了的动作必须从这里列出的状态发起，否则拒掉。
+  actionSources?: Record<string, string[]>
   metrics: string[]
 }
 

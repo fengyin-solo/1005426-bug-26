@@ -41,7 +41,12 @@ export function listRows(key: string): EntryRow[] {
 }
 
 export function saveRows(key: string, rows: EntryRow[]): void {
-  const next = { ...allRows(), [key]: rows }
+  saveModules({ [key]: rows })
+}
+
+// 多个模块的改动合并成一次 setItem：要么一起落库，要么一起不落，避免跨模块写一半。
+export function saveModules(partial: Record<string, EntryRow[]>): void {
+  const next = { ...allRows(), ...partial }
   cache = next
   if (typeof window !== 'undefined' && window.localStorage) {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next))

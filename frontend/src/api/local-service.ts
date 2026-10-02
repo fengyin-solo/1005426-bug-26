@@ -43,10 +43,29 @@ export function runAction(key: string, id: number, action: string): ActionResult
   if (current === target) {
     return { ok: false, message: `${meta.entity}已经是「${target}」，不用重复操作` }
   }
+  // 状态只能按顺序流转：声明了起始状态的动作必须命中，没声明的也不许往回跳。
+  const sources = meta.actionSources?.[action]
+  if (sources && !sources.includes(current)) {
+    return {
+      ok: false,
+      message: `${meta.entity}当前状态「${current}」不能执行「${action}」，状态只能按顺序流转`,
+    }
+  }
+  const currentIndex = meta.statuses.indexOf(current)
+  const targetIndex = meta.statuses.indexOf(target)
+  if (currentIndex >= 0 && targetIndex >= 0 && targetIndex < currentIndex) {
+    return {
+      ok: false,
+      message: `${meta.entity}不能从「${current}」颠倒回「${target}」，状态只能按顺序流转`,
+    }
+  }
   const lastStatus = meta.statuses[meta.statuses.length - 1]
+  // 工作流状态变了，同名字段（如「演练状态」）一起跟上，读的时候以同一条记录为准。
+  const statusField = meta.fields.find((field) => field.endsWith('状态'))
   const updated: EntryRow = {
     ...rows[index],
     status: target,
+    ...(statusField ? { [statusField]: target } : {}),
     pending: target !== lastStatus,
     abnormal: NEGATIVE_ACTIONS.some((verb) => action.startsWith(verb)),
   }
