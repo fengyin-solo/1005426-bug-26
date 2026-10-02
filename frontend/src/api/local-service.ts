@@ -1,5 +1,6 @@
 import { MODULE_BY_KEY } from '@/data/modules'
-import { allRows, listRows, resetRows, saveRows } from '@/data/local-store'
+import { activeRows, allRows, listRows, resetRows, saveRows } from '@/data/local-store'
+import { totalParticipants } from '@/data/participants'
 import type { ActionResult, EntryRow, ModuleMeta, OverviewResult, PageResult } from '@/data/types'
 
 // 会写进数据的「往回走」动作：命中就把这条记录标成异常态，看板上能一眼看出来。
@@ -23,8 +24,9 @@ export function filterRows(rows: EntryRow[], filters: Record<string, string>): E
   )
 }
 
+/** 所有读入口共用：只返回有效（未作废）记录，撤下的重评项不会在任何列表/看板重复显示。 */
 export function listEntries(key: string, filters: Record<string, string> = {}): PageResult {
-  const matched = filterRows(listRows(key), filters)
+  const matched = filterRows(activeRows(key), filters)
   return { items: matched, total: matched.length, page: 1, size: matched.length }
 }
 
@@ -34,23 +36,24 @@ export function runAction(key: string, id: number, action: string): ActionResult
   if (!target) {
     return { ok: false, message: `${meta.entity}没有登记「${action}」这个动作` }
   }
-  const rows = listRows(key)
-  const index = rows.findIndex((row) => Number(row.id) === id)
+  const rows = activeRows(key)
+  const all = listRows(key)
+  const index = all.findIndex((row) => Number(row.id) === id && row.active !== false)
   if (index < 0) {
     return { ok: false, message: `没有找到编号为 ${id} 的${meta.entity}` }
   }
-  const current = String(rows[index].status)
+  const current = String(all[index].status)
   if (current === target) {
     return { ok: false, message: `${meta.entity}已经是「${target}」，不用重复操作` }
   }
   const lastStatus = meta.statuses[meta.statuses.length - 1]
   const updated: EntryRow = {
-    ...rows[index],
+    ...all[index],
     status: target,
     pending: target !== lastStatus,
     abnormal: NEGATIVE_ACTIONS.some((verb) => action.startsWith(verb)),
   }
-  const next = [...rows]
+  const next = [...all]
   next[index] = updated
   saveRows(key, next)
   return { ok: true, message: `${meta.entity}已${action}，当前状态「${target}」` }
@@ -65,7 +68,7 @@ export function exportEntries(key: string): { filename: string; content: string 
   const meta = moduleMeta(key)
   const header = ['编号', ...meta.fields, '当前状态']
   const lines = [header.join(',')]
-  for (const row of listRows(key)) {
+  for (const row of activeRows(key)) {
     lines.push([row.id, ...meta.fields.map((field) => row[field] ?? ''), row.status].join(','))
   }
   return { filename: `${meta.name}-清单.csv`, content: `\uFEFF${lines.join('\n')}` }
@@ -87,7 +90,7 @@ export function downloadEntries(key: string): void {
 export function loadOverview(): OverviewResult {
   const rows = allRows()
   const modules = [...MODULE_BY_KEY.values()].map((meta) => {
-    const entries = rows[meta.key] ?? []
+    const entries = (rows[meta.key] ?? []).filter((row) => row.active !== false)
     return {
       name: meta.name,
       created: entries.length,
@@ -102,4 +105,23 @@ export function loadOverview(): OverviewResult {
     { label: '异常量', value: modules.reduce((sum, item) => sum + item.abnormal, 0) },
   ]
   return { cards, modules }
+}
+
+/** 应急演练专用汇总：参演人数走统一选择器，和列表页、看板、大屏完全同一份口径。 */
+export function drillSummary(): {
+  pendingCount: number
+  evaluatedCount: number
+  participantTotal: number
+  byStatus: { status: string; count: number }[]
+} {
+  const drills = activeRows('drill')
+  return {
+    pendingCount: drills.filter((row) => String(row.status) === '待组织').length,
+    evaluatedCount: drills.filter((row) => String(row.status) === '已评估').length,
+    participantTotal: totalParticipants(drills),
+    byStatus: ['待组织', '已组织', '已评估', '已取消'].map((status) => ({
+      status,
+      count: drills.filter((row) => String(row.status) === status).length,
+    })),
+  }
 }

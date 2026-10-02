@@ -10,6 +10,7 @@ const Patrol = () => import('@/views/patrol/index.vue')
 const Relocate = () => import('@/views/relocate/index.vue')
 const Refuge = () => import('@/views/refuge/index.vue')
 const Drill = () => import('@/views/drill/index.vue')
+const DrillScreen = () => import('@/views/drill/screen.vue')
 const Project = () => import('@/views/project/index.vue')
 const Cutting = () => import('@/views/cutting/index.vue')
 const Wall = () => import('@/views/wall/index.vue')
@@ -33,6 +34,7 @@ const router = createRouter({
     { path: '/relocate', name: 'relocate', component: Relocate },
     { path: '/refuge', name: 'refuge', component: Refuge },
     { path: '/drill', name: 'drill', component: Drill },
+    { path: '/drill/screen', name: 'drill-screen', component: DrillScreen },
     { path: '/project', name: 'project', component: Project },
     { path: '/cutting', name: 'cutting', component: Cutting },
     { path: '/wall', name: 'wall', component: Wall },

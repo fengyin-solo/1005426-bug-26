@@ -35,3 +35,50 @@ body { margin: 0; background: #f6f8fb; color: #1f2937; }
 .error-text { color: #b42318; }
 .status-legend { display: flex; flex-wrap: wrap; gap: 12px; margin: 0 0 10px; font-size: 12px; color: var(--muted); }
 .legend-item { background: #eef2f7; border-radius: 999px; padding: 2px 10px; }
+
+/* 看板视图 */
+.board { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.board-col { background: #eef2f7; border: 1px solid var(--border); border-radius: 8px; padding: 10px; min-height: 200px; }
+.board-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 14px; }
+.board-count { background: #fff; border-radius: 999px; padding: 0 8px; font-size: 12px; color: var(--muted); }
+.board-card { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; margin-bottom: 8px; cursor: pointer; }
+.board-card.invalid { border-color: #e3a008; }
+.card-no { margin: 0; font-weight: 600; font-size: 13px; color: var(--brand); }
+.card-subject { margin: 2px 0; font-size: 13px; }
+.card-meta { margin: 2px 0; font-size: 12px; color: var(--muted); }
+.card-conclusion { margin: 4px 0 0; font-size: 12px; color: #1f2937; border-top: 1px dashed var(--border); padding-top: 4px; }
+.card-muted { margin: 4px 0 0; font-size: 12px; color: var(--muted); }
+.board-empty { text-align: center; color: var(--muted); font-size: 12px; }
+
+/* 弹窗 */
+.modal-mask { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.45); display: flex; align-items: center; justify-content: center; z-index: 50; }
+.modal { background: #fff; border-radius: 10px; width: 560px; max-width: calc(100vw - 32px); max-height: calc(100vh - 48px); overflow: auto; box-shadow: 0 12px 32px rgba(15, 23, 42, 0.25); }
+.modal-head { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+.modal-head h3 { margin: 0; font-size: 15px; }
+.modal-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; }
+.modal-foot { display: flex; justify-content: flex-end; gap: 8px; padding: 10px 16px; border-top: 1px solid var(--border); }
+.form-item { display: flex; flex-direction: column; gap: 4px; font-size: 13px; }
+.form-item textarea, .form-item input { border: 1px solid var(--border); border-radius: 6px; padding: 8px; font: inherit; }
+.form-hint { color: #1f6feb; }
+.form-hint.bad { color: #b42318; }
+.draft-tip { margin: 0; font-size: 12px; color: #0e7a43; }
+.detail-list { margin: 0; }
+.detail-row { display: flex; gap: 12px; padding: 6px 0; border-bottom: 1px dashed var(--border); font-size: 13px; }
+.detail-row dt { width: 96px; color: var(--muted); flex-shrink: 0; }
+.detail-row dd { margin: 0; }
+
+/* 大屏 */
+.screen { background: #0b1220; color: #e5e7eb; border-radius: 10px; padding: 18px; min-height: calc(100vh - 90px); }
+.screen-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 14px; }
+.screen-head h2 { margin: 0; font-size: 22px; letter-spacing: 2px; }
+.screen-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+.screen-card { background: #111c33; border: 1px solid #1f3357; border-radius: 8px; padding: 14px; text-align: center; }
+.screen-card strong { display: block; font-size: 30px; color: #7dd3fc; }
+.screen-card span { font-size: 13px; color: #94a3b8; }
+.screen-board { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.screen-col { background: #111c33; border: 1px solid #1f3357; border-radius: 8px; padding: 10px; }
+.screen-col h4 { margin: 0 0 8px; font-size: 14px; color: #cbd5e1; display: flex; justify-content: space-between; }
+.screen-item { background: #0b1220; border: 1px solid #1f3357; border-radius: 6px; padding: 8px; margin-bottom: 8px; font-size: 12px; }
+.screen-item p { margin: 2px 0; }
+.screen-item .no { color: #7dd3fc; font-weight: 600; }
+.badge { display: inline-block; font-size: 11px; border-radius: 4px; padding: 0 6px; margin-left: 6px; background: #fff3d6; color: #92560a; border: 1px solid #e3a008; }
